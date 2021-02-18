@@ -12,16 +12,18 @@
     }
 </style>
 
+
 <div class="container">
     <div class="row">
-    @foreach (var animal in animalEmoji)
-     {
-        <div class="col-3">
-            <button type="button" class="btn btn-outline-dark">
-                <h1>@animal</h1>
-            </button>
-        </div>
-     }
+        @foreach (var animal in shuffledAnimals)
+        {
+            <div class="col-3">
+                <button @onclick="@(() => ButtonClick(animal))"
+                        type="button" class="btn btn-outline-dark">
+                    <h1>@animal</h1>
+                </button>
+            </div>
+        }
     </div>
 </div>
 
@@ -43,5 +45,40 @@
     protected override void OnInitialized()
     {
         SetUpGame();
+    }
+
+    private void SetUpGame()
+    {
+        Random random = new Random();
+        shuffledAnimals = animalEmoji
+            .OrderBy(item => random.Next())
+            .ToList();
+    }
+
+    string lastAnimalFound = string.Empty;
+
+    private void ButtonClick(string animal)
+    {
+        if (lastAnimalFound == string.Empty)
+        {
+            // First Selection Of Pair
+            lastAnimalFound = animal;
+        }
+        else if (lastAnimalFound == animal)
+        {
+            // Match Found 
+            lastAnimalFound = string.Empty;
+
+            // Replace Found Animals With Emoty String To Hide Them
+            shuffledAnimals = shuffledAnimals
+                .Select(a => a.Replace(animal, string.Empty))
+                .ToList();
+        }
+        else
+        {
+            // User Slected Pair That Dont Match
+            // Reset
+            lastAnimalFound = String.Empty;
+        }
     }
 }
