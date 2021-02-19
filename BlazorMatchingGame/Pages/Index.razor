@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Timers
 
 <style>
     .container {
@@ -28,12 +29,17 @@
         </div>
         }
     </div>
+    <br />
     <div class="row">
         <h2>Matches Found: @matchesFound</h2>
+    </div>
+    <div class="row">
+        <h2>Time: @timeDisplay</h2>
     </div>
 </div>
 
 @code {
+
 List<string> animalEmoji = new List<string>()
 {
     "🐶", "🐶",
@@ -48,9 +54,15 @@ List<string> animalEmoji = new List<string>()
 
 List<string> shuffledAnimals = new List<string>();
 int matchesFound = 0;
+Timer timer;
+int tenthsOfSecondsElapsed = 0;
+string timeDisplay;
 
 protected override void OnInitialized()
 {
+    timer = new Timer(100);
+    timer.Elapsed += Timer_Tick;
+
     SetUpGame();
 }
 
@@ -60,7 +72,9 @@ private void SetUpGame()
     shuffledAnimals = animalEmoji
         .OrderBy(item => random.Next())
         .ToList();
-matchesFound = 0;
+
+    matchesFound = 0;
+    tenthsOfSecondsElapsed = 0;
 }
 
 string lastAnimalFound = string.Empty;
@@ -86,6 +100,9 @@ private void ButtonClick(string animal, string animalDescription)
     matchesFound++;
     if (matchesFound == 8)
     {
+        timer.Stop();
+        timeDisplay += " - Play Again?";
+
         SetUpGame();
     }
     }
