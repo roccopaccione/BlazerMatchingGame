@@ -28,62 +28,72 @@
         </div>
         }
     </div>
+    <div class="row">
+        <h2>Matches Found: @matchesFound</h2>
+    </div>
 </div>
 
 @code {
-    List<string> animalEmoji = new List<string>()
+List<string> animalEmoji = new List<string>()
 {
-        "🐶", "🐶",
-        "🐺", "🐺",
-        "🐮", "🐮",
-        "🦊", "🦊",
-        "🐱", "🐱",
-        "🦁", "🦁",
-        "🐯", "🐯",
-        "🐹", "🐹",
-    };
+    "🐶", "🐶",
+    "🐺", "🐺",
+    "🐮", "🐮",
+    "🦊", "🦊",
+    "🐱", "🐱",
+    "🦁", "🦁",
+    "🐯", "🐯",
+    "🐹", "🐹",
+};
 
-    List<string> shuffledAnimals = new List<string>();
+List<string> shuffledAnimals = new List<string>();
+int matchesFound = 0;
 
-    protected override void OnInitialized()
+protected override void OnInitialized()
+{
+    SetUpGame();
+}
+
+private void SetUpGame()
+{
+    Random random = new Random();
+    shuffledAnimals = animalEmoji
+        .OrderBy(item => random.Next())
+        .ToList();
+matchesFound = 0;
+}
+
+string lastAnimalFound = string.Empty;
+string lastDescription = string.Empty;
+
+private void ButtonClick(string animal, string animalDescription)
+{
+    if (lastAnimalFound == string.Empty)
+    {
+        // First Selection Of Pair
+        lastAnimalFound = animal;
+        lastDescription = animalDescription;
+    }
+    else if ((lastAnimalFound == animal) && (animalDescription != lastDescription))
+    {
+        // Match Found
+        lastAnimalFound = string.Empty;
+
+        // Replace Found Animals With Emoty String To Hide Them
+        shuffledAnimals = shuffledAnimals
+            .Select(a => a.Replace(animal, string.Empty))
+            .ToList();
+    matchesFound++;
+    if (matchesFound == 8)
     {
         SetUpGame();
     }
-
-    private void SetUpGame()
-    {
-        Random random = new Random();
-        shuffledAnimals = animalEmoji
-            .OrderBy(item => random.Next())
-            .ToList();
     }
-
-    string lastAnimalFound = string.Empty;
-    string lastDescription = string.Empty;
-
-    private void ButtonClick(string animal, string animalDescription)
+    else
     {
-        if (lastAnimalFound == string.Empty)
-        {
-            // First Selection Of Pair
-            lastAnimalFound = animal;
-            lastDescription = animalDescription;
-        }
-        else if ((lastAnimalFound == animal) && (animalDescription != lastDescription))
-        {
-            // Match Found
-            lastAnimalFound = string.Empty;
-
-            // Replace Found Animals With Emoty String To Hide Them
-            shuffledAnimals = shuffledAnimals
-                .Select(a => a.Replace(animal, string.Empty))
-                .ToList();
-        }
-        else
-        {
-            // User Slected Pair That Dont Match
-            // Reset
-            lastAnimalFound = String.Empty;
-        }
+        // User Slected Pair That Dont Match
+        // Reset
+        lastAnimalFound = String.Empty;
     }
+}
 }
